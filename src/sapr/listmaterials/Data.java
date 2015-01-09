@@ -106,7 +106,7 @@ public class Data {
         return true;
     }
 
-    private static double Max(List<Double> list) {
+    public static double Max(List<Double> list) {
         double max = list.get(0);
         for(int i = 0; i < list.size(); i++) {
             if(list.get(i) > max) {
@@ -116,7 +116,7 @@ public class Data {
         return max;
     }
 
-    private static double Min(List<Double> list) {
+    public static double Min(List<Double> list) {
         double min = list.get(0);
         for(int i = 0; i < list.size(); i++) {
             if(list.get(i) < min) {

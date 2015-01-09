@@ -1,9 +1,5 @@
 package sapr.listmaterials;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,18 +12,13 @@ public class Detail {
     public int Demand;
     public List<Double> X = new ArrayList<Double>();
     public List<Double> Y = new ArrayList<Double>();
-    //public double Xc, Yc;
 
-    /*public Detail() {
-        Count = 0;
-        Demand = 0;
-    }*/
+    //Определение контура, описанного вокруг детали
+    public double MinX = Data.Min(X);
+    public double MaxX = Data.Max(X);
+    public double MinY = Data.Min(Y);
+    public double MaxY = Data.Max(Y);
+    public double Width = MaxX - MinX;
+    public double Height = MaxY - MinY;
 
-    /*public Detail(String name, int count, int demand, List<Double> x, List<Double> y) {
-        Name = name;
-        Count = count;
-        Demand = demand;
-        XWork = x;
-        YWork = y;
-    }*/
 }
