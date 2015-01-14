@@ -1,13 +1,17 @@
 package sapr.listmaterials;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Grigoriy on 09.01.2015.
  */
 public class Material {
-    public double width, height;
+    public int count = 0; //количество листов материала
+    public List<MaterialList> items = new ArrayList<MaterialList>(); //листы материала
 
-    public Material (double w, double h) {
-        width = w;
-        height = h;
+    public void Add(MaterialList materialList) {
+        items.add(materialList);
+        count++;
     }
 }

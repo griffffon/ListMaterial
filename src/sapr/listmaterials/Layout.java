@@ -1,5 +1,8 @@
 package sapr.listmaterials;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Grigoriy on 09.01.2015.
  */
@@ -16,5 +19,10 @@ public class Layout { //разкладка
         detail = d;
         widthDetail = Data.Max(detail.X) - Data.Min(detail.X);
         heightDetail = Data.Max(detail.Y) - Data.Min(detail.Y);
+    }
+
+    public void CombinationDetail() {
+
+
     }
 }

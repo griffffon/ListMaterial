@@ -5,7 +5,19 @@ package sapr.listmaterials;
  */
 public class MainClass {
     public static void main(String [] args) {
-        Model m = new Model();
-        Data.ReadFromFile(m, "D:\\ДИПЛОМ\\111.DGT");
+        //создание модели
+        Model model = new Model();
+        Data.ReadFromFile(model, "D:\\WORKSPACES\\IDEA Workspace\\List Material\\MyModel1.dgt");
+        for(int i = 0; i < model.Count; i++) {
+            model.Details.get(i).getBorders();
+        }
+
+        //создание материала
+        Material material = new Material();
+        material.Add(new MaterialList(100, 120));
+        material.Add(new MaterialList(80, 40));
+        material.Add(new MaterialList(75, 15));
+
+        int a = 0;
     }
 }

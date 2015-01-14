@@ -28,7 +28,6 @@ public class Data {
             e.printStackTrace();
         }
 
-
         try {
             if((line = reader.readLine()) != null) {
                 line = PrepareString(line);
@@ -82,22 +81,19 @@ public class Data {
                         model.Details.get(i).Y.add(j, y);
                     }
                 }
-                //nn[i] = model.Details.get(i).Count;
 
+                //сдивгаем детали в начало координат
+                double deltaX = Min(model.Details.get(i).X);
+                double deltaY = Min(model.Details.get(i).Y);
+                for(int j = 0; j < model.Details.get(i).Count; j++) {
+                    model.Details.get(i).X.set(j, model.Details.get(i).X.get(j) - deltaX);
+                    model.Details.get(i).Y.set(j, model.Details.get(i).Y.get(j) - deltaY);
+                }
 
-
-                /*for(int j = 0; j < model.Details.get(i).Count; j++) {
-                    double Xmax, Xmin, Ymax, Ymin;
-                    Xmax = Max(model.Details.get(i).X);
-                    Xmin = Min(model.Details.get(i).X);
-                    Ymax = Max(model.Details.get(i).Y);
-                    Ymin = Min(model.Details.get(i).Y);
-                    double Xc = (Xmax + Xmin) / 2;
-                    double Yc = (Ymax + Ymin) / 2;
-
-                    model.Details.get(i).X.set(j, model.Details.get(i).X.get(j) - Xc);
-                    model.Details.get(i).Y.set(j, model.Details.get(i).Y.get(j) - Yc);
-                }*/
+                //определяем полюс детали
+                //TODO: уточнить у Чупра способ определения полюса
+                model.Details.get(i).Xpol = model.Details.get(i).getWidth() / 2;
+                model.Details.get(i).Ypol = model.Details.get(i).getHeight() / 2;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,6 +137,10 @@ public class Data {
                 newStr.append(curr);
                 if(i == str.length()-2) newStr.append(next);
             }
+        }
+
+        if((str.length() == 1) && (!str.equals(" "))) {
+            return str;
         }
 
         return newStr.toString();
