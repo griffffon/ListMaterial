@@ -1,5 +1,6 @@
 package sapr.listmaterials;
 
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,49 +78,23 @@ public class Data {
                             model.Details.get(i).Count = j;
                             continue;
                         }
-                        model.Details.get(i).X.add(j, x);
-                        model.Details.get(i).Y.add(j, y);
+                        model.Details.get(i).Points.add(new Point2D.Double(x, y));
                     }
+                    nn[i] = model.Details.get(i).Count;
                 }
-
-                //сдивгаем детали в начало координат
-                double deltaX = Min(model.Details.get(i).X);
-                double deltaY = Min(model.Details.get(i).Y);
+                model.Details.get(i).bypass(); //обход точек детали. они должны ити против часовой стрелки
+                //TODO: раскоментить
+                /*double xc = (model.Details.get(i).getMaxX() + model.Details.get(i).getMinX()) / 2;
+                double yc = (model.Details.get(i).getMaxY() + model.Details.get(i).getMinY()) / 2;
                 for(int j = 0; j < model.Details.get(i).Count; j++) {
-                    model.Details.get(i).X.set(j, model.Details.get(i).X.get(j) - deltaX);
-                    model.Details.get(i).Y.set(j, model.Details.get(i).Y.get(j) - deltaY);
-                }
-
-                //определяем полюс детали
-                //TODO: уточнить у Чупра способ определения полюса
-                model.Details.get(i).Xpol = model.Details.get(i).getWidth() / 2;
-                model.Details.get(i).Ypol = model.Details.get(i).getHeight() / 2;
+                    model.Details.get(i).Points.set(j, new Point2D.Double(model.Details.get(i).Points.get(j).getX() - xc, model.Details.get(i).Points.get(j).getY() - yc));
+                }*/
             }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
         return true;
-    }
-
-    public static double Max(List<Double> list) {
-        double max = list.get(0);
-        for(int i = 0; i < list.size(); i++) {
-            if(list.get(i) > max) {
-                max = list.get(i);
-            }
-        }
-        return max;
-    }
-
-    public static double Min(List<Double> list) {
-        double min = list.get(0);
-        for(int i = 0; i < list.size(); i++) {
-            if(list.get(i) < min) {
-                min = list.get(i);
-            }
-        }
-        return min;
     }
 
     private static String PrepareString(String str) {
