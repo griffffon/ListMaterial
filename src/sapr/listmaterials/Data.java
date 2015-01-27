@@ -83,12 +83,13 @@ public class Data {
                     nn[i] = model.Details.get(i).Count;
                 }
                 model.Details.get(i).bypass(); //обход точек детали. они должны ити против часовой стрелки
-                //TODO: раскоментить
-                /*double xc = (model.Details.get(i).getMaxX() + model.Details.get(i).getMinX()) / 2;
+
+                //Сдвигаем центр детали в (0; 0)
+                double xc = (model.Details.get(i).getMaxX() + model.Details.get(i).getMinX()) / 2;
                 double yc = (model.Details.get(i).getMaxY() + model.Details.get(i).getMinY()) / 2;
                 for(int j = 0; j < model.Details.get(i).Count; j++) {
                     model.Details.get(i).Points.set(j, new Point2D.Double(model.Details.get(i).Points.get(j).getX() - xc, model.Details.get(i).Points.get(j).getY() - yc));
-                }*/
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

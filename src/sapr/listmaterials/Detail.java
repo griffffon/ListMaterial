@@ -1,5 +1,9 @@
 package sapr.listmaterials;
 
+import com.sun.glass.ui.Pen;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,22 +19,35 @@ public class Detail {
     public Point2D.Double PolarPoint;
     public Borders borders;
 
-    //границы детали (левая, правая, верхняя, нижняя)
-   /* public List<Point2D.Double> BorderLeft;
-    public List<Point2D.Double> BorderRight;
-    public List<Point2D.Double> BorderTop;
-    public List<Point2D.Double> BorderBottom;*/
-
     Detail() {
         Points = new ArrayList<Point2D.Double>();
         PolarPoint = new Point2D.Double();
 
         borders = new Borders();
+    }
 
-        /*BorderLeft = new ArrayList<Point2D.Double>();
-        BorderRight = new ArrayList<Point2D.Double>();
-        BorderTop = new ArrayList<Point2D.Double>();
-        BorderBottom = new ArrayList<Point2D.Double>();*/
+    Detail(Detail template) {
+        Name = new String(template.Name);
+        Count = template.Count;
+        Demand = template.Demand;
+        PolarPoint = new Point2D.Double(template.PolarPoint.getX(), template.PolarPoint.getY());
+        Points = new ArrayList<Point2D.Double>();
+        for(int i = 0; i < Count; i++) {
+            Points.add(new Point2D.Double(template.Points.get(i).getX(), template.Points.get(i).getY()));
+        }
+        borders = new Borders();
+        getBorders();
+    }
+
+    public void paint(JFrame frame) {
+        int xc, yc;
+        int mxy = 10;
+        xc = frame.getWidth() / 2;
+        yc = frame.getHeight() / 2;
+
+        for(int i = 0; i < Count-1; i++) {
+            frame.getGraphics().drawLine(xc + (int) Points.get(i).getX() * mxy, yc - (int) Points.get(i).getY() * mxy, xc + (int) Points.get(i + 1).getX() * mxy, yc - (int) Points.get(i + 1).getY() * mxy);
+        }
     }
 
     //Определение контура, описанного вокруг детали
@@ -147,28 +164,37 @@ public class Detail {
             }
 
             for(int j = 0; j < numExtPointY; j++) {
-                borders.right.add(new Point2D.Double(Points.get(j).getX(), Points.get(j).getY()));
+                borders.right.add(new Point2D.Double(Points.get(j+1).getX(), Points.get(j+1).getY()));
             }
 
             borders.numRight = numRight1 + numExtPointY;
         }
         else {
-            numRight1 = Count - numExtPointY;
+            numLeft1 = Count - numExtPointY;
 
-            for(int j = 0; j < numRight1; j++) {
-                borders.right.add(new Point2D.Double(Points.get(numExtPointY + j).getX(), Points.get(numExtPointY + j).getY()));
+            for(int j = 0; j < numLeft1; j++) {
+                borders.left.add(new Point2D.Double(Points.get(numExtPointY + j).getX(), Points.get(numExtPointY + j).getY()));
             }
 
             for(int j = 0; j < numInfPointY; j++) {
-                borders.right.add(new Point2D.Double(Points.get(j).getX(), Points.get(j).getY()));
+                borders.left.add(new Point2D.Double(Points.get(j+1).getX(), Points.get(j+1).getY()));
             }
 
-            borders.numRight = numRight1 + numInfPointY;
+            //borders.numRight += numInfPointY;
             borders.numLeft = numExtPointY - numInfPointY + 1;
 
-            for(int j = 0; j < numLeft1; j++) {
-                borders.left.add(new Point2D.Double(Points.get(numInfPointY + j).getX(), Points.get(numInfPointY + j).getY()));
+            for(int j = 0; j < borders.numLeft; j++) {
+                borders.right.add(new Point2D.Double(Points.get(numInfPointY + j).getX(), Points.get(numInfPointY + j).getY()));
             }
+
+            borders.numRight = borders.right.size();
+        }
+    }
+
+    public void rotate(double alpha) {
+        //not tested
+        for(int i = 0; i < Count; i++) {
+            Points.set(i, new Point2D.Double(Points.get(i).getX() * Math.cos(alpha) - Points.get(i).getY() * Math.sin(alpha), Points.get(i).getX() * Math.sin(alpha) + Points.get(i).getY() * Math.cos(alpha)));
         }
     }
 
