@@ -2,6 +2,7 @@ package sapr.listmaterials;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * Created by Grigoriy on 15.01.2015.
@@ -32,8 +33,8 @@ public class Window extends JFrame {
         material.Add(new MaterialList(80, 40));
         material.Add(new MaterialList(75, 15));
 
-        layout = new Layout(model.Details.get(0), 1000, 1000, 1);
-        layout.CombinationRectsX();
+        layout = new Layout(model.Details.get(0), new Point2D.Double(50, 150), 50, 70, 0);
+        layout.CombinationX();
 
         paint(this.getGraphics());
     }
@@ -43,7 +44,7 @@ public class Window extends JFrame {
         //-----------------------------
         //настройка окна
         setVisible(true);
-        setSize(1000, 700);
+        setPreferredSize(new Dimension(1000, 700));
 
         for(int i = 0; i <model.Count; i++) {
             //model.Details.get(i).paint(this);

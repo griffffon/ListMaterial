@@ -12,53 +12,51 @@ import java.util.List;
  * Created by Grigoriy on 09.01.2015.
  */
 public class Layout { //разкладка
-    public Detail templateDetail;
-    //public List<Detail> details = new ArrayList<Detail>();
-    public int count; //количество деталей в разкладке
-    public double widthLayout, heightLayout; //ширина и высота разкладки
-    public double widthDetail, heightDetail; //ширина и высота детали, из которой сформирована разкладка
-    //public int rowsNum, colsNum; //количество строк и столбцов разкладки
-    public List<Row> rows;
-    public int Count;
-    public int DetsInRow;
+    public Detail TemplateDetail;
+    public double Width, Height; //ширина и высота разкладки
+    public List<Row> Rows;
+    public int Count;//количество рядов
     public int Type; //0 - ряды вдоль оси Ох, 1 - вдоль Оу
-    public int flag; //признак размещения строк. если flag = 0 - строки располагаются вдоль ОХ. если flag = 1 - вдоль OY
-    public Vector a1, a2, q;
+    public Point2D.Double StartPoint;
 
-    Layout(Detail d, double widthMaterial, double heightMaterial, int type) {
-        templateDetail = d;
-        widthDetail = templateDetail.getWidth();
-        heightDetail = templateDetail.getHeight();
+    Layout(Detail d, Point2D.Double start, double width, double height, int type) {
+        TemplateDetail = d;
         Type = type;
-
-        rows = new ArrayList<Row>();
+        Rows = new ArrayList<Row>();
         Count = 0;
+        Width = width;
+        Height = height;
+        StartPoint = start;
 
         if(Type == 0) {
-            Count = new BigDecimal(heightMaterial / templateDetail.getHeight()).setScale(0, RoundingMode.DOWN).intValue();
-            DetsInRow = new BigDecimal(widthMaterial / templateDetail.getWidth()).setScale(0, RoundingMode.DOWN).intValue();
+            Count = new BigDecimal(Height / TemplateDetail.getHeight()).setScale(0, RoundingMode.DOWN).intValue();
         } else if(Type == 1) {
-            Count = new BigDecimal(widthMaterial / templateDetail.getWidth()).setScale(0, RoundingMode.DOWN).intValue();
-            DetsInRow = new BigDecimal(heightMaterial / templateDetail.getHeight()).setScale(0, RoundingMode.DOWN).intValue();
+            Count = new BigDecimal(Width / TemplateDetail.getWidth()).setScale(0, RoundingMode.DOWN).intValue();
         }
 
         for(int i = 0; i < Count; i++) {
-            rows.add(new Row());
+            Rows.add(new Row());
         }
     }
 
     public void paint(JFrame frame) {
-        int xc, yc;
-        int mxy = 10;
-        xc = frame.getWidth() / 2;
-        yc = frame.getHeight() / 2;
+        //paint borders
+        frame.getGraphics().drawLine((int)StartPoint.getX() * Data.mxy, (int)StartPoint.getY() * Data.mxy, (int)StartPoint.getX() * Data.mxy, (int)(StartPoint.getY() - Height) * Data.mxy);
+        frame.getGraphics().drawLine((int)StartPoint.getX() * Data.mxy, (int)(StartPoint.getY() - Height) * Data.mxy, (int)(StartPoint.getX() + Width) * Data.mxy, (int)(StartPoint.getY() - Height) * Data.mxy);
+        frame.getGraphics().drawLine((int)(StartPoint.getX() + Width) * Data.mxy, (int)(StartPoint.getY() - Height) * Data.mxy, (int)(StartPoint.getX() + Width) * Data.mxy, (int)StartPoint.getY() * Data.mxy);
+        frame.getGraphics().drawLine((int)(StartPoint.getX() + Width) * Data.mxy, (int)StartPoint.getY() * Data.mxy, (int)StartPoint.getX() * Data.mxy, (int)StartPoint.getY() * Data.mxy);
 
-        for(int i = 0; i < Count; i++) {
-            for(int j = 0; j < rows.get(i).details.size(); j++) {
-                for(int k = 0; k < rows.get(i).details.get(j).Count - 1; k++) {
-                    frame.getGraphics().drawLine(xc + (int) rows.get(i).details.get(j).Points.get(k).getX() * mxy, yc - (int) rows.get(i).details.get(j).Points.get(k).getY() * mxy, xc + (int) rows.get(i).details.get(j).Points.get(k+1).getX() * mxy, yc - (int) rows.get(i).details.get(j).Points.get(k+1).getY() * mxy);
-                }
-            }
+        //paint details in layout
+        for(int i = 0; i < Rows.get(0).Count; i++) {
+            Rows.get(0).Details.get(i).paint(frame);
+        }
+
+        for(int i = 0; i < Rows.get(1).Count; i++) {
+            Rows.get(1).Details.get(i).paint(frame);
+        }
+
+        for(int i = 0; i < Rows.get(2).Count; i++) {
+            Rows.get(2).Details.get(i).paint(frame);
         }
     }
 
@@ -69,24 +67,24 @@ public class Layout { //разкладка
         double eps = 0.001;
         double y1, y2, result1, x_shift;
 
-        for(int i = 0; i < d2.borders.left.size(); i++) {
-            for(int j = 0; j < d1.borders.right.size() - 1; j++) {
-                if(Math.abs(d1.borders.right.get(j).getY() - d1.borders.right.get(j+1).getY()) <= eps) continue;
-                if(d1.borders.right.get(j).getY() > d1.borders.right.get(j+1).getY()) {
-                    y1 = d1.borders.right.get(j+1).getY();
-                    y2 = d1.borders.right.get(j).getY();
+        for(int i = 0; i < d2.Borders.left.size(); i++) {
+            for(int j = 0; j < d1.Borders.right.size() - 1; j++) {
+                if(Math.abs(d1.Borders.right.get(j).getY() - d1.Borders.right.get(j+1).getY()) <= eps) continue;
+                if(d1.Borders.right.get(j).getY() > d1.Borders.right.get(j+1).getY()) {
+                    y1 = d1.Borders.right.get(j+1).getY();
+                    y2 = d1.Borders.right.get(j).getY();
                 }
                 else {
-                    y1 = d1.borders.right.get(j).getY();
-                    y2 = d1.borders.right.get(j+1).getY();
+                    y1 = d1.Borders.right.get(j).getY();
+                    y2 = d1.Borders.right.get(j+1).getY();
                 }
-                if((d2.borders.left.get(i).getY() <= y2) && (d2.borders.left.get(i).getY() >= y1)) {
-                    x_shift = d1.borders.right.get(j).getX() + (d1.borders.right.get(j + 1).getX() - d1.borders.right.get(j).getX()) * (d2.borders.left.get(i).getY() - d1.borders.right.get(j).getY()) / (d1.borders.right.get(j+1).getY() - d1.borders.right.get(j).getY());
+                if((d2.Borders.left.get(i).getY() <= y2) && (d2.Borders.left.get(i).getY() >= y1)) {
+                    x_shift = d1.Borders.right.get(j).getX() + (d1.Borders.right.get(j + 1).getX() - d1.Borders.right.get(j).getX()) * (d2.Borders.left.get(i).getY() - d1.Borders.right.get(j).getY()) / (d1.Borders.right.get(j+1).getY() - d1.Borders.right.get(j).getY());
                     if(!flag) {
-                        result1 = x_shift - d2.borders.left.get(i).getX();
+                        result1 = x_shift - d2.Borders.left.get(i).getX();
                     }
                     else {
-                        result1 = d2.borders.left.get(i).getX() - x_shift;
+                        result1 = d2.Borders.left.get(i).getX() - x_shift;
                     }
                     if(result1 > result) result = result1;
                 }
@@ -102,24 +100,24 @@ public class Layout { //разкладка
         double eps = 0.001;
         double x1, x2, result1, y_shift;
 
-        for(int i = 0; i < d2.borders.bottom.size(); i++) {
-            for(int j = 0; j < d1.borders.top.size() - 1; j++) {
-                if(Math.abs(d1.borders.top.get(j).getX() - d1.borders.bottom.get(j+1).getX()) <= eps) continue;
-                if(d1.borders.top.get(j).getX() > d1.borders.top.get(j+1).getX()) {
-                    x1 = d1.borders.top.get(j+1).getX();
-                    x2 = d1.borders.top.get(j).getX();
+        for(int i = 0; i < d2.Borders.bottom.size(); i++) {
+            for(int j = 0; j < d1.Borders.top.size() - 1; j++) {
+                if(Math.abs(d1.Borders.top.get(j).getX() - d1.Borders.bottom.get(j+1).getX()) <= eps) continue;
+                if(d1.Borders.top.get(j).getX() > d1.Borders.top.get(j+1).getX()) {
+                    x1 = d1.Borders.top.get(j+1).getX();
+                    x2 = d1.Borders.top.get(j).getX();
                 }
                 else {
-                    x1 = d1.borders.top.get(j).getX();
-                    x2 = d1.borders.top.get(j+1).getX();
+                    x1 = d1.Borders.top.get(j).getX();
+                    x2 = d1.Borders.top.get(j+1).getX();
                 }
-                if((d2.borders.bottom.get(i).getX() <= x2) && (d2.borders.bottom.get(i).getX() >= x1)) {
-                    y_shift = d1.borders.top.get(j).getY() + (d1.borders.top.get(j + 1).getY() - d1.borders.top.get(j).getY()) * (d2.borders.bottom.get(i).getX() - d1.borders.top.get(j).getX()) / (d1.borders.top.get(j+1).getX() - d1.borders.top.get(j).getX());
+                if((d2.Borders.bottom.get(i).getX() <= x2) && (d2.Borders.bottom.get(i).getX() >= x1)) {
+                    y_shift = d1.Borders.top.get(j).getY() + (d1.Borders.top.get(j + 1).getY() - d1.Borders.top.get(j).getY()) * (d2.Borders.bottom.get(i).getX() - d1.Borders.top.get(j).getX()) / (d1.Borders.top.get(j+1).getX() - d1.Borders.top.get(j).getX());
                     if(!flag) {
-                        result1 = y_shift - d2.borders.bottom.get(i).getY();
+                        result1 = y_shift - d2.Borders.bottom.get(i).getY();
                     }
                     else {
-                        result1 = d2.borders.bottom.get(i).getY() - y_shift;
+                        result1 = d2.Borders.bottom.get(i).getY() - y_shift;
                     }
                     if(result1 > result) result = result1;
                 }
@@ -128,43 +126,78 @@ public class Layout { //разкладка
         return result;
     }
 
-    public void CombinationRectsX() {
-        //заполняем ряды деталями
-        Detail firstDet = new Detail(templateDetail);
-        //сместить в левый нижний угол раскладки
-
-        for(int i = 0; i < firstDet.Points.size(); i++) {
-
-        }
-
-        for(int i = 0; i < Count; i++) {
-            for(int j = 0; j < DetsInRow; j++) {
-                rows.get(i).details.add(new Detail(templateDetail));
+    public void CombinationX() {
+        if(Type == 0) {
+            //добавляем детали на раскладку, пока в этом есть необходимость
+            int counter = 0;
+            while (counter < TemplateDetail.Demand) {
+                Rows.get(counter / Count).add(new Detail(TemplateDetail));
+                counter++;
             }
-        }
 
+            //сдвигаем "прямоугольники" деталей
+            double deltaY = 0;
+            for(int i = 0; i < Count; i++) {
+                deltaY = i * TemplateDetail.getHeight();
+                for(int j = 0; j < Rows.get(i).Count; j++) {
+                    if(j == 0) {
+                        Detail detail = Rows.get(i).Details.get(j);
+                        Point2D.Double tmpStartPoint = new Point2D.Double(StartPoint.getX(), StartPoint.getY() - deltaY);
+                        detail.setStartPoint(tmpStartPoint);
+                    }
+                    else {
+                        double shiftX = 0;
+                        double valA = ShiftX(Rows.get(i).Details.get(j-1), Rows.get(i).Details.get(j), true);
+                        double valB = ShiftX(Rows.get(i).Details.get(j-1), Rows.get(i).Details.get(j), false);
+                        if(valB > valA) {
+                            shiftX = valB;
+                        } else {
+                            shiftX = valA;
+                        }
 
-
-        //добаляем первую деталь в расскладку.
-        //левый край прямоугольника, описаного вокруг детали, смещаем в (0; 0)
-       /* Detail d1 = new Detail(templateDetail);
-        double deltaX = d1.getWidth() / 2;
-        double deltaY = d1.getHeight() / 2;
-        for(int i = 0; i < d1.Count; i++) {
-            d1.Points.set(i, new Point2D.Double(d1.Points.get(i).getX() + deltaX, d1.Points.get(i).getY() - deltaY));
-        }
-
-        details.add(d1);
-
-        //if((templateDetail.getWidth() <= widthMaterial) && (templateDetail.getHeight() <= heightMaterial)) {
-        //    int numDetsInRow = new BigDecimal(widthMaterial / templateDetail.getWidth()).setScale(0, RoundingMode.DOWN).intValue();
-            for(int i = 1; i < Count; i++) {
-                Detail det = new Detail(details.get(i-1));
-                for(int j = 0; j < det.Count; j++) {
-                    det.Points.set(j, new Point2D.Double(det.Points.get(j).getX() + det.getWidth(), det.Points.get(j).getY()));
+                        Detail detail = Rows.get(i).Details.get(j);
+                        Point2D.Double tmpStartPoint = new Point2D.Double(StartPoint.getX() + j * shiftX, StartPoint.getY() - deltaY);
+                        detail.setStartPoint(tmpStartPoint);
+                    }
                 }
-                details.add(det);
             }
-        //}*/
+        }
+        else if(Type == 1) {
+            //NOT FINISHED
+            //NOT TESTED
+            //добавляем детали на раскладку, пока в этом есть необходимость
+            int counter = 0;
+            while (counter < TemplateDetail.Demand) {
+                Rows.get(counter / Count).add(new Detail(TemplateDetail));
+                counter++;
+            }
+
+            //сдвигаем "прямоугольники" деталей
+            double deltaX = 0;
+            for(int i = 0; i < Count; i++) {
+                deltaX = i * TemplateDetail.getWidth();
+                for(int j = 0; j < Rows.get(i).Count; j++) {
+                    if(j == 0) {
+                        Detail detail = Rows.get(i).Details.get(j);
+                        Point2D.Double tmpStartPoint = new Point2D.Double(StartPoint.getX() + deltaX, StartPoint.getY());
+                        detail.setStartPoint(tmpStartPoint);
+                    }
+                    else {
+                        double shiftY = 0;
+                        double valA = ShiftY(Rows.get(i).Details.get(j - 1), Rows.get(i).Details.get(j), true);
+                        double valB = ShiftY(Rows.get(i).Details.get(j - 1), Rows.get(i).Details.get(j), false);
+                        if(valB > valA) {
+                            shiftY = valB;
+                        } else {
+                            shiftY = valA;
+                        }
+
+                        Detail detail = Rows.get(i).Details.get(j);
+                        Point2D.Double tmpStartPoint = new Point2D.Double(StartPoint.getX() + deltaX, StartPoint.getY() - j * shiftY);
+                        detail.setStartPoint(tmpStartPoint);
+                    }
+                }
+            }
+        }
     }
 }

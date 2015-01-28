@@ -17,13 +17,14 @@ public class Detail {
     public int Demand;
     public List<Point2D.Double> Points;
     public Point2D.Double PolarPoint;
-    public Borders borders;
+    public Borders Borders;
+    public Point2D.Double StartPoint;
 
     Detail() {
         Points = new ArrayList<Point2D.Double>();
         PolarPoint = new Point2D.Double();
-
-        borders = new Borders();
+        Borders = new Borders();
+        StartPoint = new Point2D.Double();
     }
 
     Detail(Detail template) {
@@ -31,22 +32,38 @@ public class Detail {
         Count = template.Count;
         Demand = template.Demand;
         PolarPoint = new Point2D.Double(template.PolarPoint.getX(), template.PolarPoint.getY());
+        StartPoint = new Point2D.Double(template.StartPoint.getX(), template.StartPoint.getY());
         Points = new ArrayList<Point2D.Double>();
         for(int i = 0; i < Count; i++) {
             Points.add(new Point2D.Double(template.Points.get(i).getX(), template.Points.get(i).getY()));
         }
-        borders = new Borders();
+        Borders = new Borders();
         getBorders();
     }
 
     public void paint(JFrame frame) {
-        int xc, yc;
-        int mxy = 10;
-        xc = frame.getWidth() / 2;
-        yc = frame.getHeight() / 2;
-
         for(int i = 0; i < Count-1; i++) {
-            frame.getGraphics().drawLine(xc + (int) Points.get(i).getX() * mxy, yc - (int) Points.get(i).getY() * mxy, xc + (int) Points.get(i + 1).getX() * mxy, yc - (int) Points.get(i + 1).getY() * mxy);
+            frame.getGraphics().drawLine((int) Points.get(i).getX() * Data.mxy, - (int) Points.get(i).getY() * Data.mxy, (int) Points.get(i + 1).getX() * Data.mxy, - (int) Points.get(i + 1).getY() * Data.mxy);
+        }
+    }
+
+    public Point2D.Double getStartPoint() {
+        StartPoint = new Point2D.Double(getMinX(), getMaxY());
+        return StartPoint;
+    }
+
+    public void setStartPoint(Point2D.Double point) {
+        if (StartPoint != null) {
+            double deltaX = 0, deltaY = 0;
+            deltaX = point.getX() - StartPoint.getX();
+            deltaY = point.getY() - StartPoint.getY();
+
+            StartPoint.x = point.getX();
+            StartPoint.y = point.getY();
+
+            for(int i = 0; i < Count; i++) {
+                Points.set(i, new Point2D.Double(Points.get(i).getX() + deltaX, Points.get(i).getY() - deltaY));
+            }
         }
     }
 
@@ -102,6 +119,7 @@ public class Detail {
 
     //определяем границы детали
     public void getBorders() {
+        getStartPoint();
         getTopAndBottomBorders(getMinXNum(), getMaxXNum());
         getLeftAndRightBorders(getMinYNum(), getMaxYNum());
     }
@@ -109,41 +127,41 @@ public class Detail {
     public void getTopAndBottomBorders(int numInfPointX, int numExtPointX) {
         int numBottom1 = 0, numTop1 = 0;
         if(numInfPointX > numExtPointX) {
-            borders.numTop = numInfPointX-numExtPointX+1;
+            Borders.numTop = numInfPointX-numExtPointX+1;
 
-            for(int j = 0; j < borders.numTop; j++) {
-                borders.top.add(new Point2D.Double(Points.get(numExtPointX + j).getX(), Points.get(numExtPointX + j).getY()));
+            for(int j = 0; j < Borders.numTop; j++) {
+                Borders.top.add(new Point2D.Double(Points.get(numExtPointX + j).getX(), Points.get(numExtPointX + j).getY()));
             }
 
             numBottom1 = Count - numInfPointX;
 
             for(int j = 0; j < numBottom1; j++) {
-                borders.bottom.add(new Point2D.Double(Points.get(numInfPointX + j).getX(), Points.get(numInfPointX + j).getY()));
+                Borders.bottom.add(new Point2D.Double(Points.get(numInfPointX + j).getX(), Points.get(numInfPointX + j).getY()));
             }
 
             for(int j = 0; j < numExtPointX; j++) {
-                borders.bottom.add(new Point2D.Double(Points.get(j).getX(), Points.get(j).getY()));
+                Borders.bottom.add(new Point2D.Double(Points.get(j).getX(), Points.get(j).getY()));
             }
 
-            borders.numBottom = numBottom1 + numExtPointX;
+            Borders.numBottom = numBottom1 + numExtPointX;
         }
         else {
             numTop1 = Count - numExtPointX;
             //numTop1 = Count - numExtPointX - 1;
 
             for(int j = 0; j < numTop1; j++) {
-                borders.top.add(new Point2D.Double(Points.get(numExtPointX+j).getX(), Points.get(numExtPointX+j).getY()));
+                Borders.top.add(new Point2D.Double(Points.get(numExtPointX+j).getX(), Points.get(numExtPointX+j).getY()));
             }
 
             for(int j = 0; j < numInfPointX; j++) {
-                borders.top.add(new Point2D.Double(Points.get(j).getX(), Points.get(j).getY()));
+                Borders.top.add(new Point2D.Double(Points.get(j).getX(), Points.get(j).getY()));
             }
 
-            borders.numTop = numTop1 + numInfPointX;
-            borders.numBottom = numExtPointX - numInfPointX + 1;
+            Borders.numTop = numTop1 + numInfPointX;
+            Borders.numBottom = numExtPointX - numInfPointX + 1;
 
-            for(int j = 0; j < borders.numBottom; j++) {
-                borders.bottom.add(new Point2D.Double(Points.get(numInfPointX+j).getX(), Points.get(numInfPointX+j).getY()));
+            for(int j = 0; j < Borders.numBottom; j++) {
+                Borders.bottom.add(new Point2D.Double(Points.get(numInfPointX+j).getX(), Points.get(numInfPointX+j).getY()));
             }
         }
     }
@@ -151,43 +169,43 @@ public class Detail {
     public void getLeftAndRightBorders(int numInfPointY, int numExtPointY) {
         int numLeft1 = 0, numRight1 = 0;
         if(numInfPointY > numExtPointY) {
-            borders.numLeft = numInfPointY - numExtPointY + 1;
+            Borders.numLeft = numInfPointY - numExtPointY + 1;
 
-            for(int j = 0; j < borders.numLeft; j++) {
-                borders.left.add(new Point2D.Double(Points.get(numExtPointY+j).getX(), Points.get(numExtPointY+j).getY()));
+            for(int j = 0; j < Borders.numLeft; j++) {
+                Borders.left.add(new Point2D.Double(Points.get(numExtPointY+j).getX(), Points.get(numExtPointY+j).getY()));
             }
 
             numRight1 = Count - numInfPointY;
 
             for(int j = 0; j < numRight1; j++) {
-                borders.right.add(new Point2D.Double(Points.get(numInfPointY+j).getX(), Points.get(numInfPointY+j).getY()));
+                Borders.right.add(new Point2D.Double(Points.get(numInfPointY+j).getX(), Points.get(numInfPointY+j).getY()));
             }
 
             for(int j = 0; j < numExtPointY; j++) {
-                borders.right.add(new Point2D.Double(Points.get(j+1).getX(), Points.get(j+1).getY()));
+                Borders.right.add(new Point2D.Double(Points.get(j+1).getX(), Points.get(j+1).getY()));
             }
 
-            borders.numRight = numRight1 + numExtPointY;
+            Borders.numRight = numRight1 + numExtPointY;
         }
         else {
             numLeft1 = Count - numExtPointY;
 
             for(int j = 0; j < numLeft1; j++) {
-                borders.left.add(new Point2D.Double(Points.get(numExtPointY + j).getX(), Points.get(numExtPointY + j).getY()));
+                Borders.left.add(new Point2D.Double(Points.get(numExtPointY + j).getX(), Points.get(numExtPointY + j).getY()));
             }
 
             for(int j = 0; j < numInfPointY; j++) {
-                borders.left.add(new Point2D.Double(Points.get(j+1).getX(), Points.get(j+1).getY()));
+                Borders.left.add(new Point2D.Double(Points.get(j+1).getX(), Points.get(j+1).getY()));
             }
 
-            //borders.numRight += numInfPointY;
-            borders.numLeft = numExtPointY - numInfPointY + 1;
+            //Borders.numRight += numInfPointY;
+            Borders.numLeft = numExtPointY - numInfPointY + 1;
 
-            for(int j = 0; j < borders.numLeft; j++) {
-                borders.right.add(new Point2D.Double(Points.get(numInfPointY + j).getX(), Points.get(numInfPointY + j).getY()));
+            for(int j = 0; j < Borders.numLeft; j++) {
+                Borders.right.add(new Point2D.Double(Points.get(numInfPointY + j).getX(), Points.get(numInfPointY + j).getY()));
             }
 
-            borders.numRight = borders.right.size();
+            Borders.numRight = Borders.right.size();
         }
     }
 

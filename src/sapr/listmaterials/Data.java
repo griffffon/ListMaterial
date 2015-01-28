@@ -9,10 +9,11 @@ import java.util.List;
  * Created by Grigoriy on 07.01.2015.
  */
 public class Data {
+    public static int mxy = 4;
+
     public static boolean ReadFromFile(Model model, String path) {
         BufferedReader reader = null;
         String line;
-        List<String> lines = new ArrayList<String>();
         FileInputStream inF = null;
         int [] nn;
 
@@ -22,7 +23,6 @@ public class Data {
             e.printStackTrace();
         }
 
-        //reader = new BufferedReader(new FileReader(path), "UTF-8");
         try {
             reader = new BufferedReader(new InputStreamReader(inF,"Windows-1251"));
         } catch (UnsupportedEncodingException e) {
