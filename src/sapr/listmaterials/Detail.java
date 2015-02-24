@@ -1,6 +1,6 @@
 package sapr.listmaterials;
 
-import com.sun.glass.ui.Pen;
+//import com.sun.glass.ui.Pen;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,13 +18,13 @@ public class Detail {
     public List<Point2D.Double> Points;
     public Point2D.Double PolarPoint;
     public Borders Borders;
-    public Point2D.Double StartPoint;
+    //public Point2D.Double StartPoint;
 
     Detail() {
         Points = new ArrayList<Point2D.Double>();
         PolarPoint = new Point2D.Double();
         Borders = new Borders();
-        StartPoint = new Point2D.Double();
+        //StartPoint = new Point2D.Double();
     }
 
     Detail(Detail template) {
@@ -32,7 +32,7 @@ public class Detail {
         Count = template.Count;
         Demand = template.Demand;
         PolarPoint = new Point2D.Double(template.PolarPoint.getX(), template.PolarPoint.getY());
-        StartPoint = new Point2D.Double(template.StartPoint.getX(), template.StartPoint.getY());
+        //StartPoint = new Point2D.Double(template.StartPoint.getX(), template.StartPoint.getY());
         Points = new ArrayList<Point2D.Double>();
         for(int i = 0; i < Count; i++) {
             Points.add(new Point2D.Double(template.Points.get(i).getX(), template.Points.get(i).getY()));
@@ -47,7 +47,29 @@ public class Detail {
         }
     }
 
-    public Point2D.Double getStartPoint() {
+    public Point2D.Double getPolarPoint() {
+        Point2D.Double point = new Point2D.Double();
+        point.x = (getMaxX() + getMinX()) / 2;
+        point.y = (getMaxY() + getMinY()) / 2;
+        return point;
+    }
+
+    public void setPolarPoint(Point2D.Double point) {
+        if (PolarPoint != null) {
+            double deltaX = 0, deltaY = 0;
+            deltaX = point.getX() - PolarPoint.getX();
+            deltaY = point.getY() - PolarPoint.getY();
+
+            PolarPoint.x = point.getX();
+            PolarPoint.y = point.getY();
+
+            for(int i = 0; i < Count; i++) {
+                Points.set(i, new Point2D.Double(Points.get(i).getX() + deltaX, Points.get(i).getY() - deltaY));
+            }
+        }
+    }
+
+   /* public Point2D.Double getStartPoint() {
         StartPoint = new Point2D.Double(getMinX(), getMaxY());
         return StartPoint;
     }
@@ -65,7 +87,7 @@ public class Detail {
                 Points.set(i, new Point2D.Double(Points.get(i).getX() + deltaX, Points.get(i).getY() - deltaY));
             }
         }
-    }
+    }*/
 
     //Определение контура, описанного вокруг детали
     public double getWidth() {
@@ -119,7 +141,8 @@ public class Detail {
 
     //определяем границы детали
     public void getBorders() {
-        getStartPoint();
+        //getStartPoint();
+        getPolarPoint();
         getTopAndBottomBorders(getMinXNum(), getMaxXNum());
         getLeftAndRightBorders(getMinYNum(), getMaxYNum());
     }

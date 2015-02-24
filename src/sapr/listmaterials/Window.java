@@ -28,13 +28,13 @@ public class Window extends JFrame {
         }
 
         //создание материала
-        Material material = new Material();
+       /* Material material = new Material();
         material.Add(new MaterialList(100, 120));
         material.Add(new MaterialList(80, 40));
-        material.Add(new MaterialList(75, 15));
+        material.Add(new MaterialList(75, 15));*/
 
-        layout = new Layout(model.Details.get(0), new Point2D.Double(50, 150), 50, 70, 0);
-        layout.CombinationX();
+        layout = new Layout(model.Details.get(0), new Point2D.Double(50, 450), new MaterialList(100, 120), 0, 1);
+        //layout.CombinationX();
 
         paint(this.getGraphics());
     }

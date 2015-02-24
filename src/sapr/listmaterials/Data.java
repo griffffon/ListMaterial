@@ -9,7 +9,9 @@ import java.util.List;
  * Created by Grigoriy on 07.01.2015.
  */
 public class Data {
-    public static int mxy = 4;
+    public static int mxy = 1; //масштаб
+    public static double delta_det = 0; //технологічний відсуп між деталями
+    public static double delta_edge = 0; //технологічний відступ від краю матеріалу
 
     public static boolean ReadFromFile(Model model, String path) {
         BufferedReader reader = null;
